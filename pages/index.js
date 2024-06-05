@@ -1,11 +1,9 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Inter } from 'next/font/google';
 
-
 const inter = Inter({ subsets: ['latin'] });
-
 
 export default function Home() {
   const [jumlahSaudaraError, setJumlahSaudaraError] = useState(false);
@@ -17,8 +15,6 @@ export default function Home() {
   const [subCompetitionType, setSubCompetitionType] = useState('');
   const [showOtherField, setShowOtherField] = useState(false);
   const [showOtherFieldYes, setShowOtherFieldYes] = useState(false);
-  
-
 
   const handleScroll = (event) => {
     event.preventDefault();
@@ -30,7 +26,6 @@ export default function Home() {
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
 
-    // Check if 'jumlah_saudara' is filled
     if (!data.jumlah_saudara) {
       setJumlahSaudaraError(true);
       return;
@@ -41,8 +36,8 @@ export default function Home() {
   };
 
   const handleCompetitionChange = (value) => {
-    setParticipatedInCompetition(value === "YA");
-    if (value === "Tidak") {
+    setParticipatedInCompetition(value === 'YA');
+    if (value === 'Tidak') {
       setCompetitionType('');
       setSubCompetitionType('');
     }
@@ -50,10 +45,10 @@ export default function Home() {
 
   const handleEducationChange = (event) => {
     setContinuingEducation(event.target.value === 'YA');
-    setShowOtherField(false);  // Reset "Lainnya" field when switching between YES and NO
-    setShowOtherFieldYes(false);  // Reset "Lainnya" field for YES option
+    setShowOtherField(false);
+    setShowOtherFieldYes(false);
   };
-  
+
   const handlePlanChange = (event) => {
     setShowOtherField(event.target.value === 'Lainnya');
   };
@@ -61,10 +56,41 @@ export default function Home() {
   const handleCampusCriteriaChange = (event) => {
     setShowOtherFieldYes(event.target.value === 'Lainnya');
   };
-  
-  
 
+  useEffect(() => {
+    const handlePenghasilanAyahChange = (event) => {
+      document.querySelectorAll('input[type="checkbox"][name="penghasilan_ayah"]').forEach(box => {
+        if (box !== event.target) box.checked = false;
+      });
+    };
 
+    const handlePenghasilanIbuChange = (event) => {
+      document.querySelectorAll('input[type="checkbox"][name="penghasilan_ibu"]').forEach(box => {
+        if (box !== event.target) box.checked = false;
+      });
+    };
+
+    const ayahCheckboxes = document.querySelectorAll('input[type="checkbox"][name="penghasilan_ayah"]');
+    ayahCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', handlePenghasilanAyahChange);
+    });
+
+    const ibuCheckboxes = document.querySelectorAll('input[type="checkbox"][name="penghasilan_ibu"]');
+    ibuCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', handlePenghasilanIbuChange);
+    });
+
+    return () => {
+      ayahCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', handlePenghasilanAyahChange);
+      });
+      ibuCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', handlePenghasilanIbuChange);
+      });
+    };
+  }, []);
+
+  
   return (
     <div
       className="relative h-full w-full flex items-center justify-center text-center bg-cover bg-center"
