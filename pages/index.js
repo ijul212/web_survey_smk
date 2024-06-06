@@ -2,6 +2,8 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { Inter } from 'next/font/google';
+import { validateForm } from './Validation/validation.js';
+
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,6 +17,8 @@ export default function Home() {
   const [subCompetitionType, setSubCompetitionType] = useState('');
   const [showOtherField, setShowOtherField] = useState(false);
   const [showOtherFieldYes, setShowOtherFieldYes] = useState(false);
+  const [gaji, setGaji] = useState('');
+
 
   const handleScroll = (event) => {
     event.preventDefault();
@@ -25,16 +29,27 @@ export default function Home() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
-
-    if (!data.jumlah_saudara) {
-      setJumlahSaudaraError(true);
-      return;
+  
+    // Memanggil fungsi validateForm() untuk memvalidasi formulir
+    const isValid = validateForm(data);
+  
+    if (isValid) {
+      // Formulir valid, lakukan hal yang diperlukan (misalnya, kirim data ke server)
+      console.log('Formulir valid:');
+    } else {
+      // Formulir tidak valid, tampilkan pesan kesalahan atau lakukan tindakan lainnya
+      console.log('Formulir tidak valid');
+  
+      // Menampilkan alert untuk setiap bidang yang belum diisi
+      Object.keys(data).forEach(key => {
+        if (!data[key]) {
+          const emptyFieldMessage = `Harap isi bidang ${key.replace(/_/g, ' ')} terlebih dahulu.`;
+          alert(emptyFieldMessage);
+        }
+      });
     }
-
-    setJumlahSaudaraError(false);
-    console.log(data);
   };
-
+  
   const handleCompetitionChange = (value) => {
     setParticipatedInCompetition(value === 'YA');
     if (value === 'Tidak') {
@@ -89,6 +104,17 @@ export default function Home() {
       });
     };
   }, []);
+  const handleCheckboxChange = (value) => {
+    if (value === 'YA') {
+      setHasGuardian(true);
+    } else {
+      setHasGuardian(false);
+    }
+  };
+
+  const handleGajiChange = (value) => {
+    setGaji(value);
+  };
 
   
   return (
@@ -264,26 +290,26 @@ export default function Home() {
         </select>
     </div>
     <div className="sm:col-span-2">
-      <label className="block text-left text-black">Penghasilan Ayah:</label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ayah" value="< 3 Juta" required className="mr-2" />
-          &lt; 3 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ayah" value="3 - 5 Juta" required className="mr-2" />
-          3 - 5 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ayah" value="5 - 10 Juta" required className="mr-2" />
-          5 - 10 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ayah" value="> 10 Juta" required className="mr-2" />
-          &gt; 10 Juta
-        </label>
-      </div>
-    </div>
+  <label className="block text-left text-black">Penghasilan Ayah:</label>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    <label className="flex items-center text-black mt-2">
+      <input type="checkbox" name="penghasilan_ayah" value="< 3 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      &lt; 3 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ayah" value="3 - 5 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      3 - 5 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ayah" value="5 - 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      5 - 10 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ayah" value="> 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      &gt; 10 Juta
+    </label>
+  </div>
+</div>
     <div className="sm:col-span-2">
       <label htmlFor="nama_ibu" className="block text-left text-black">Nama Ibu:</label>
       <input placeholder="Wajib mengisi nama ibu" type="text" id="nama_ibu" name="nama_ibu" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black" />
@@ -297,26 +323,26 @@ export default function Home() {
         </select>
     </div>
     <div className="sm:col-span-2">
-      <label className="block text-left text-black">Penghasilan Ibu:</label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ibu" value="< 3 Juta" required className="mr-2" />
-          &lt; 3 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ibu" value="3 - 5 Juta" required className="mr-2" />
-          3 - 5 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ibu" value="5 - 10 Juta" required className="mr-2" />
-          5 - 10 Juta
-        </label>
-        <label className="flex items-center text-black">
-          <input type="radio" name="penghasilan_ibu" value="> 10 Juta" required className="mr-2" />
-          &gt; 10 Juta
-        </label>
-      </div>
-    </div>
+  <label className="block text-left text-black">Penghasilan Ibu:</label>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    <label className="flex items-center text-black mt-2">
+      <input type="checkbox" name="penghasilan_ibu" value="< 3 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      &lt; 3 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ibu" value="3 - 5 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      3 - 5 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ibu" value="5 - 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      5 - 10 Juta
+    </label>
+    <label className="flex items-center text-black">
+      <input type="checkbox" name="penghasilan_ibu" value="> 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" />
+      &gt; 10 Juta
+    </label>
+  </div>
+</div>
     <div>
       <label htmlFor="jumlah_saudara" className="block text-left text-black">Jumlah Saudara:</label>
       <input placeholder="Wajib mengisi saudara kandung" type="number" id="jumlah_saudara" name="jumlah_saudara" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black" />
@@ -327,69 +353,80 @@ export default function Home() {
 
 
 <fieldset className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6 max-w-screen-md mx-auto">
-              <div>
-                 <p className="mt-5 text-lg text-black-500 flex items-center">
-                    <span className="mr-2 font-semibold text-black">C. DATA KELUARGA WALI</span>
-                 </p>
-              </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <label className="block text-left text-black">Apakah saudara memiliki orang tua Wali? Jika ada, klik ya</label>
-                    <div className="mt-2">
-                      <label className="flex items-center text-black">
-                        <input type="radio" name="ada_wali" value="YA" required className="mr-2"
-                          onChange={() => setHasGuardian(true)}
-                        />
-                        YA
-                      </label>
-                      <label className="flex items-center text-black">
-                        <input type="radio" name="ada_wali" value="TIDAK" required className="mr-2"
-                          onChange={() => setHasGuardian(false)}
-                        />
-                        TIDAK
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                
-                {hasGuardian && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="nama_wali" className="block text-left text-black">Nama Orang Tua/Wali:</label>
-                      <input type="text" id="nama_wali" name="nama_wali" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black" />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label htmlFor="pekerjaan_wali" className="block text-left text-black">Pekerjaan Orang Tua/Wali:</label>
-                      <select id="pekerjaan_wali" name="pekerjaan_wali" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black">
-                        <option value="">-- Pilih Jenis Pekerjaan --</option>
-                        <option value="ASN">ASN</option>
-                        <option value="Non_ASN">Non ASN</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-left text-black">Penghasilan Orang Tua/Wali:</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <label className="flex items-center text-black">
-                          <input type="radio" name="penghasilan_wali" value="< 3 Juta" required className="mr-2" />
-                          &lt; 3 Juta
-                        </label>
-                        <label className="flex items-center text-black">
-                          <input type="radio" name="penghasilan_wali" value="3 - 5 Juta" required className="mr-2" />
-                          3 - 5 Juta
-                        </label>
-                        <label className="flex items-center text-black">
-                          <input type="radio" name="penghasilan_wali" value="5 - 10 Juta" required className="mr-2" />
-                          5 - 10 Juta
-                        </label>
-                        <label className="flex items-center text-black">
-                          <input type="radio" name="penghasilan_wali" value="> 10 Juta" required className="mr-2" />
-                          &gt; 10 Juta
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </fieldset>
+      <div>
+        <p className="mt-5 text-lg text-black-500 flex items-center">
+          <span className="mr-2 font-semibold text-black">C. DATA KELUARGA WALI</span>
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label className="block text-left text-black">Apakah saudara memiliki orang tua Wali? Jika ada, klik ya</label>
+          <div className="mt-2 flex">
+            <label className="flex items-center text-black">
+              <input
+                type="checkbox"
+                name="ada_wali"
+                value="YA"
+                required
+                className="h-5 w-5 text-blue-600 mr-2"
+                checked={hasGuardian}
+                onChange={() => handleCheckboxChange('YA')}
+              />
+              YA
+            </label>
+            <label className="flex items-center text-black ml-4">
+              <input
+                type="checkbox"
+                name="ada_wali"
+                value="TIDAK"
+                required
+                className="h-5 w-5 text-blue-600 mr-2"
+                checked={!hasGuardian}
+                onChange={() => handleCheckboxChange('TIDAK')}
+              />
+              TIDAK
+            </label>
+          </div>
+        </div>
+      </div>
+      {hasGuardian && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <div className="sm:col-span-2">
+            <label htmlFor="nama_wali" className="block text-left text-black">Nama Orang Tua/Wali:</label>
+            <input type="text" id="nama_wali" name="nama_wali" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black" />
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="pekerjaan_wali" className="block text-left text-black">Pekerjaan Orang Tua/Wali:</label>
+            <select id="pekerjaan_wali" name="pekerjaan_wali" required className="h-10 border mt-1 rounded px-4 w-full bg-gray-50 text-black">
+              <option value="">-- Pilih Jenis Pekerjaan --</option>
+              <option value="ASN">ASN</option>
+              <option value="Non_ASN">Non ASN</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-left text-black">Penghasilan Orang Tua/Wali:</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <label className="flex items-center text-black mt-2">
+                <input type="checkbox" name="gaji" value="< 3 Juta" required className="h-5 w-5 text-blue-600 mr-2" onChange={() => handleGajiChange('< 3 Juta')} checked={gaji === '< 3 Juta'} />
+                &lt; 3 Juta
+              </label>
+              <label className="flex items-center text-black">
+                <input type="checkbox" name="gaji" value="3 - 5 Juta" required className="h-5 w-5 text-blue-600 mr-2" onChange={() => handleGajiChange('3 - 5 Juta')} checked={gaji === '3 - 5 Juta'} />
+                3 - 5 Juta
+              </label>
+              <label className="flex items-center text-black">
+                <input type="checkbox" name="gaji" value="5 - 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" onChange={() => handleGajiChange('5 - 10 Juta')} checked={gaji === '5 - 10 Juta'} />
+                5 - 10 Juta
+              </label>
+              <label className="flex items-center text-black">
+                <input type="checkbox" name="gaji" value="> 10 Juta" required className="h-5 w-5 text-blue-600 mr-2" onChange={() => handleGajiChange('> 10 Juta')} checked={gaji === '> 10 Juta'} />
+                &gt; 10 Juta
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+    </fieldset>
 
 
               <fieldset className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6 max-w-screen-md mx-auto">
@@ -792,10 +829,8 @@ export default function Home() {
         </div>
       )}
     </fieldset>
-
-
               <button type="submit" className="w-full mt-2 px-8 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-[#1695ca] hover:bg-[#659ebc] focus:outline-none focus:border-blue-700 focus:shadow-outline-blue transition duration-150 ease-in-out">
-                submit
+                Submit
               </button>
             </form>
           </div>
